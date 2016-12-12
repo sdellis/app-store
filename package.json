@@ -19,9 +19,7 @@
   "devDependencies": {
     "base-component": "viewdir/base-component#v1.0.8",
     "gulp": "^3.9.1",
-    "gulp-tasks": "viewdir/gulp-tasks",
-    "chai": "^3.5.0",
-    "gulp-mocha": "^3.0.1",
+    "gulp-tasks": "viewdir/gulp-tasks#ts-node-mocha-tests",
     "jsdom": "^9.8.3",
     "redux": "^3.6.0",
     "require-dir": "^0.3.0"
