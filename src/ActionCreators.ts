@@ -1,16 +1,12 @@
 //import * as actionTypes from './ActionTypes';
 namespace IIIFComponents {
 
-    export function grow(i = 1) {
-      return { type: GROW, incrementBy: i }
+    export function register(c) {
+      return { type: REGISTER, component: c }
     }
 
-    export function reset() {
-      return { type: RESET }
-    }
-
-    export function changeColor(c = "red") {
-      return { type: CHANGE_COLOR, color: c }
+    export function update(c) {
+      return { type: UPDATE, component: c }
     }
 
 }

@@ -5,48 +5,57 @@
     <meta charset="utf-8">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/component-boilerplate-redux.css" />
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/sdellis/toolbar-component-redux/master/dist/toolbar-component-redux.css" />
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
     <script src="js/base-component.bundle.js"></script>
-    <script src="js/component-boilerplate-redux.js"></script> 
+    <script src="js/component-boilerplate-redux.js"></script>
+    <script src="https://rawgit.com/sdellis/toolbar-component-redux/master/dist/toolbar-component-redux.bundle.js"></script>
 </head>
 <body>
-
-    <div class="btn-group" role="group" aria-label="test button group">
-      <button id="grow10" type="button" class="btn btn-default">Grow by 10</button>
-      <button id="grow50" type="button" class="btn btn-default">Grow by 50</button>
-      <button id="reset" type="button" class="btn btn-default">Reset</button>
-    </div>
-
-    <div id="color-buttons" class="btn-group">
-      <label class="btn btn-primary">
-        <input id="red" name="color" type="radio" autocomplete="off" value="red" checked> Red
-      </label>
-      <label class="btn btn-primary">
-        <input id="green" name="color" type="radio" type="checkbox" autocomplete="off" value="green"> Green
-      </label>
-      <label class="btn btn-primary">
-        <input id="blue" name="color" type="radio" type="checkbox" autocomplete="off" value="blue"> Blue
-      </label>
-    </div>
-
-    <div id="boilerplate-redux"></div>
+    <h2>Components in this app:</h2>
+    <div id="app-store"></div>
+    <div id="toolbar1"></div>
+    <div id="toolbar2"></div>
 
     <script>
 
-        var boilerplateRedux;
+        var appStore, toolbar1, toolbar2;
 
         $(function() {
 
-            boilerplateRedux = new IIIFComponents.ComponentBoilerplateRedux({
-                element: "#boilerplate-redux",
-                color: "blue", // or "vertical"
-                size: 100
+            toolbar1 = new IIIFComponents.Toolbar({
+                element: "#toolbar1",
+                direction: "vertical",
+                buttons: [{id:'1', label:'foo', selected:false},
+                          {id:'2', label:'bar', selected:false}]
             });
 
-            boilerplateRedux.on('stateChanged', function(args) {
+            toolbar2 = new IIIFComponents.Toolbar({
+                element: "#toolbar2",
+                direction: "horizontal",
+                buttons: [{id:'1', label:'foo', selected:false},
+                          {id:'2', label:'bar', selected:false}]
+            });
+
+            appStore = new IIIFComponents.ComponentBoilerplateRedux({
+                element: "#app-store",
+                components: [
+                              { id: '#toolbar1', state:[], instance: toolbar1},
+                              { id: '#toolbar2', state:[], instance: toolbar2}
+                            ]
+            });
+
+            appStore.on('stateChanged', function(args) {
+                // when this changes, send setState updates
+                // to all the child components to keep them in sync
                 console.log("state changed: ");
-                console.log(args);
+                var total_componenents = args[0].components.length;
+                for (var i=0; i < total_componenents; i++) {
+                  // is this where the logic goes to update the state of a related component?
+                  args[0].components[i].instance.setState(args[0].components[i].state);
+                }
             });
 
         });
