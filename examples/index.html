@@ -49,7 +49,7 @@
 
             appStore.on('stateChanged', function(args) {
                 // when this changes, send setState updates
-                // to all the child components
+                // to all the child components to keep them in sync
                 console.log("state changed: ");
                 var total_componenents = args[0].components.length;
                 for (var i=0; i < total_componenents; i++) {
