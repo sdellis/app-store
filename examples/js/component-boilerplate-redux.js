@@ -4,27 +4,20 @@
 //import * as actionTypes from './ActionTypes';
 var IIIFComponents;
 (function (IIIFComponents) {
-    function grow(i) {
-        if (i === void 0) { i = 1; }
-        return { type: IIIFComponents.GROW, incrementBy: i };
+    function register(c) {
+        return { type: IIIFComponents.REGISTER, component: c };
     }
-    IIIFComponents.grow = grow;
-    function reset() {
-        return { type: IIIFComponents.RESET };
+    IIIFComponents.register = register;
+    function update(c) {
+        return { type: IIIFComponents.UPDATE, component: c };
     }
-    IIIFComponents.reset = reset;
-    function changeColor(c) {
-        if (c === void 0) { c = "red"; }
-        return { type: IIIFComponents.CHANGE_COLOR, color: c };
-    }
-    IIIFComponents.changeColor = changeColor;
+    IIIFComponents.update = update;
 })(IIIFComponents || (IIIFComponents = {}));
 
 var IIIFComponents;
 (function (IIIFComponents) {
-    IIIFComponents.GROW = 'GROW';
-    IIIFComponents.RESET = 'RESET';
-    IIIFComponents.CHANGE_COLOR = 'CHANGE_COLOR';
+    IIIFComponents.REGISTER = 'REGISTER';
+    IIIFComponents.UPDATE = 'UPDATE';
 })(IIIFComponents || (IIIFComponents = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -57,7 +50,7 @@ var IIIFComponents;
                 console.error("Component failed to initialise");
             }
             // Initialise the state and document/view
-            var initialState = { count: this.options.size, color: this.options.color }; // We need some app data.
+            var initialState = { components: this.options.components }; // We need some app data.
             this.tree = this._render(initialState); // We need an initial tree
             this.rootNode = createElement(this.tree); // Create an initial root DOM node ...
             //document.body.appendChild(this.rootNode);    // ... and it should be in the document
@@ -66,8 +59,7 @@ var IIIFComponents;
             function app(state, action) {
                 if (state === void 0) { state = initialState; }
                 return {
-                    count: IIIFComponents.count(state.count, action),
-                    color: IIIFComponents.color(state.color, action)
+                    components: IIIFComponents.components(state.components, action)
                 };
             }
             this._store = Redux.createStore(app);
@@ -76,18 +68,10 @@ var IIIFComponents;
             });
             // Add Event Listeners
             // Note: The only way to mutate the internal state is to dispatch an action.
-            var that = this;
-            $('#grow10').click(function () { return _this._store.dispatch(IIIFComponents.grow(10)); });
-            $('#grow50').click(function () { return _this._store.dispatch(IIIFComponents.grow(50)); });
-            $('#reset').click(function () { return _this._store.dispatch(IIIFComponents.reset()); });
-            $('input[type=radio][name=color]').change(function () {
-                that._store.dispatch(IIIFComponents.changeColor(this.value));
-            });
-            // $('#color-buttons > label').on('click', (event) => {
-            //     event.stopPropagation();
-            //     event.preventDefault();
-            //     that._store.dispatch(changeColor($(event.currentTarget).children("input").val()));
-            // });
+            var total_componenents = initialState.components.length;
+            for (var i = 0; i < total_componenents; i++) {
+                initialState.components[i].instance.on("stateChanged", function (args) { return _this._store.dispatch(IIIFComponents.update(args[0])); });
+            }
             return success;
         };
         ComponentBoilerplateRedux.prototype.getState = function () {
@@ -95,16 +79,9 @@ var IIIFComponents;
         };
         // Create a function that declares what the DOM should look like
         ComponentBoilerplateRedux.prototype._render = function (state) {
-            return h('div', {
-                style: {
-                    textAlign: 'center',
-                    margin: '50px',
-                    lineHeight: (100 + state.count) + 'px',
-                    border: '1px solid ' + state.color,
-                    width: (this.options.size + state.count) + 'px',
-                    height: (this.options.size + state.count) + 'px'
-                }
-            }, [String(state.count)]);
+            return h('ul', {}, state.components.map(function (component) {
+                return h('li', component.id);
+            }));
         };
         // where we update the template
         ComponentBoilerplateRedux.prototype._updateView = function () {
@@ -117,8 +94,7 @@ var IIIFComponents;
         };
         ComponentBoilerplateRedux.prototype._getDefaultOptions = function () {
             return {
-                color: "red",
-                size: 100
+                components: []
             };
         };
         ComponentBoilerplateRedux.prototype._resize = function () {
@@ -153,39 +129,31 @@ var IIIFComponents;
 
 var IIIFComponents;
 (function (IIIFComponents) {
-    function color(state, action) {
-        if (state === void 0) { state = 'red'; }
+    function components(state, action) {
+        if (state === void 0) { state = []; }
         switch (action.type) {
-            case IIIFComponents.CHANGE_COLOR:
-                return action.color;
+            case IIIFComponents.REGISTER:
+                return state.concat([
+                    {
+                        id: action.id,
+                        state: [],
+                        instance: {}
+                    }
+                ]);
+            case IIIFComponents.UPDATE:
+                return state.map(function (component, index) {
+                    if (component.id === action.component.id) {
+                        return Object.assign({}, component, {
+                            state: action.component
+                        });
+                    }
+                    return component;
+                });
             default:
                 return state;
         }
     }
-    IIIFComponents.color = color;
-})(IIIFComponents || (IIIFComponents = {}));
-
-var IIIFComponents;
-(function (IIIFComponents) {
-    function count(state, action) {
-        if (state === void 0) { state = 0; }
-        switch (action.type) {
-            case IIIFComponents.GROW:
-                return state + action.incrementBy;
-            //*
-            // Leaving this here for reference,
-            // in case you want to return an object
-            //*
-            //   return Object.assign({}, state, {
-            //     count: state + action.incrementBy
-            //   })
-            case IIIFComponents.RESET:
-                return 0;
-            default:
-                return state;
-        }
-    }
-    IIIFComponents.count = count;
+    IIIFComponents.components = components;
 })(IIIFComponents || (IIIFComponents = {}));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -1239,8 +1207,7 @@ function baseGetTag(value) {
   if (value == null) {
     return value === undefined ? undefinedTag : nullTag;
   }
-  value = Object(value);
-  return (symToStringTag && symToStringTag in value)
+  return (symToStringTag && symToStringTag in Object(value))
     ? getRawTag(value)
     : objectToString(value);
 }

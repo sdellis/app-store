@@ -8392,23 +8392,19 @@ declare module "constants" {
     export var UV_UDP_REUSEADDR: number;
 }
 declare namespace IIIFComponents {
-    function grow(i?: number): {
+    function register(c: any): {
         type: string;
-        incrementBy: number;
+        component: any;
     };
-    function reset(): {
+    function update(c: any): {
         type: string;
-    };
-    function changeColor(c?: string): {
-        type: string;
-        color: string;
+        component: any;
     };
 }
 
 declare namespace IIIFComponents {
-    const GROW: string;
-    const RESET: string;
-    const CHANGE_COLOR: string;
+    const REGISTER: string;
+    const UPDATE: string;
 }
 
 declare const Redux: any;
@@ -8440,15 +8436,10 @@ declare namespace IIIFComponents.ComponentBoilerplateRedux {
 
 declare namespace IIIFComponents {
     interface IComponentBoilerplateReduxOptions extends _Components.IBaseComponentOptions {
-        color?: string;
-        size?: number;
+        components?: any;
     }
 }
 
 declare namespace IIIFComponents {
-    function color(state: string, action: any): any;
-}
-
-declare namespace IIIFComponents {
-    function count(state: number, action: any): any;
+    function components(state: any[], action: any): any[];
 }
