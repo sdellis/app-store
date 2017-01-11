@@ -50,12 +50,23 @@
             appStore.on('stateChanged', function(args) {
                 // when this changes, send setState updates
                 // to all the child components to keep them in sync
-                console.log("state changed: ");
-                var total_componenents = args[0].components.length;
-                for (var i=0; i < total_componenents; i++) {
-                  // is this where the logic goes to update the state of a related component?
-                  args[0].components[i].instance.setState(args[0].components[i].state);
-                }
+                console.log("appStore state changed: ");
+                console.log(args[0]);
+                // var total_componenents = args[0].components.length;
+                // for (var i=0; i < total_componenents; i++) {
+                //   // is this where the logic goes to update the state of a related component?
+                //   var o = args[0].components[i];
+                //   if(o.instance instanceof IIIFComponents.Toolbar){
+                //     // loop through buttons,
+                //     // which is done through an action dispatch to the
+                //
+                //
+                //     // matching the select state of any with the same label
+                //     o.setState(o.state);
+                //   }
+
+                  //args[0].components[i].instance.setState(args[0].components[i].state);
+                //}
             });
 
         });
